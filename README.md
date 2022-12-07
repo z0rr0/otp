@@ -1,3 +1,3 @@
-# otp
+# OTP
 
 One time password examples.
