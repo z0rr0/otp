@@ -18,7 +18,7 @@ def secret(size: int = 0) -> str:
     return b32encode(rnd_bytes).decode().upper()
 
 
-def code(value: str, counter: int) -> str:
+def code(value: str, counter: int = -1) -> str:
     """Generate OTP code for a given value and counter."""
     if counter < 0:
         counter = dt2unix(datetime.utcnow()) // 30
