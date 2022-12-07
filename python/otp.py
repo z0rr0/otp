@@ -19,7 +19,7 @@ def secret(size: int = 0) -> str:
 
 
 def code(value: str, counter: int) -> str:
-    """Generate a TOTP code for a given secret key and counter."""
+    """Generate OTP code for a given value and counter."""
     if counter < 0:
         counter = dt2unix(datetime.utcnow()) // 30
 
@@ -30,7 +30,7 @@ def code(value: str, counter: int) -> str:
     m.update(counter_bytes)
     digest = m.digest()
 
-    offset = digest[len(digest) - 1] & 0xf
+    offset = digest[-1] & 0xf
     truncated = int.from_bytes(digest[offset:offset + 4], byteorder='big') & 0x7fffffff
 
     return str(truncated % 1_000_000).zfill(6)
