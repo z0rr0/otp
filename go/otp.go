@@ -66,16 +66,16 @@ func Code(secret string, counter int64) (string, error) {
 	b := make([]byte, 8)
 	binary.BigEndian.PutUint64(b, uint64(counter))
 
-	mac160 := hmac.New(sha1.New, key)
-	mac160.Write(b)
-	b = mac160.Sum(nil)
+	hash := hmac.New(sha1.New, key)
+	hash.Write(b)
+	b = hash.Sum(nil)
 
 	// find offset, lower 4 bits of the last byte
-	offset := b[len(b)-1] & 0xf
+	offset := b[len(b)-1] & 0xF
 	// read 4 bytes from offset as 32-bit integer
 	n := binary.BigEndian.Uint32(b[offset : offset+4])
 
 	// covert it to decimal and return last 6 digits
-	s := fmt.Sprintf("%06d", int(n&0x7fffffff))
+	s := fmt.Sprintf("%06d", int(n&0x7FFFFFFF))
 	return s[len(s)-6:], nil
 }
