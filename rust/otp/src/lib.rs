@@ -24,6 +24,7 @@ pub fn secret(size: usize) -> String {
 
     let mut key = vec![0u8; size];
     OsRng.fill_bytes(&mut key);
+
     BASE32.encode(&key).to_uppercase()
 }
 
@@ -36,10 +37,12 @@ mod tests {
         let first = secret(20);
         println!("first value = {}", first);
         assert!(first.len() > 0);
+        assert!(first.chars().all(|c| c.is_uppercase() || c.is_digit(10)));
 
         let second = secret(20);
         println!("second value = {}", second);
         assert!(second.len() > 0);
+        assert!(second.chars().all(|c| c.is_uppercase() || c.is_digit(10)));
 
         assert!(first.ne(&second));
     }
