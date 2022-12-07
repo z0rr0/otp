@@ -17,3 +17,10 @@ go test -v
 cd python
 python3 -m unittest -v test_otp
 ```
+
+### Rust
+
+```shell
+cd rust/otp
+cargo test -- --nocapture
+```
