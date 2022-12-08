@@ -1,5 +1,10 @@
 # OTP
 
+![Go](https://github.com/z0rr0/otp/workflows/Go/badge.svg)
+![Python](https://github.com/z0rr0/otp/workflows/Python/badge.svg)
+![Rust](https://github.com/z0rr0/otp/workflows/Rust/badge.svg)
+![License](https://img.shields.io/github/license/z0rr0/otp.svg)
+
 One time password examples.
 
 ## Languages
