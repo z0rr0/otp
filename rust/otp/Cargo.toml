@@ -6,6 +6,10 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
+byteorder = "1.4.3"
+chrono = "0.4.23"
 data-encoding = "2.3.3"
+hmac = "0.12.1"
 rand = { version = "0.8.5", features = ["getrandom"] }
 regex = "1.7.0"
+sha1 = "0.10.5"

@@ -22,5 +22,5 @@ python3 -m unittest -v test_otp
 
 ```shell
 cd rust/otp
-cargo test -- --nocapture
+cargo test
 ```
