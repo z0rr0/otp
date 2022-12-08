@@ -3,6 +3,7 @@ from base64 import b32decode, b32encode
 from datetime import datetime, timezone
 from hashlib import sha1
 from os import urandom
+from typing import Optional
 
 KEY_SIZE = 64
 
@@ -18,9 +19,9 @@ def secret(size: int = 0) -> str:
     return b32encode(rnd_bytes).decode()
 
 
-def code(value: str, counter: int = -1) -> str:
+def code(value: str, counter: Optional[int] = None) -> str:
     """Generate OTP code for a given value and counter."""
-    if counter < 0:
+    if counter is None:
         counter = dt2unix(datetime.utcnow()) // 30
 
     key = b32decode(value.upper().encode())
@@ -33,4 +34,5 @@ def code(value: str, counter: int = -1) -> str:
     offset = digest[-1] & 0xf
     truncated = int.from_bytes(digest[offset:offset + 4], byteorder='big') & 0x7fffffff
 
-    return str(truncated % 1_000_000).zfill(6)
+    # add left padding zeros and take right 6 digits
+    return f'{truncated:06d}'[-6:]
