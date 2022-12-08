@@ -5,6 +5,7 @@ from hashlib import sha1
 from os import urandom
 from typing import Optional
 
+# default secret key size in bytes
 KEY_SIZE = 64
 
 
