@@ -7,15 +7,15 @@ from os import urandom
 KEY_SIZE = 64
 
 
-def dt2unix(dt: datetime) -> int:
-    """Convert a datetime to unix timestamp."""
-    return int((dt - datetime(1970, 1, 1, tzinfo=timezone.utc)).total_seconds())
+def dt2unix(dt: datetime, divider: int = 30) -> int:
+    """Convert dt datetime to unix timestamp and divide it by a given divider."""
+    return int((dt - datetime(1970, 1, 1, tzinfo=timezone.utc)).total_seconds()) // divider
 
 
 def secret(size: int = 0) -> str:
     """Generate a random secret key."""
     rnd_bytes = urandom(size or KEY_SIZE)
-    return b32encode(rnd_bytes).decode().upper()
+    return b32encode(rnd_bytes).decode()
 
 
 def code(value: str, counter: int = -1) -> str:

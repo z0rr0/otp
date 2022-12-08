@@ -16,7 +16,7 @@ use rand::RngCore;
 /// ```
 /// use otp::secret;
 ///
-/// let s: String = secret(16);
+/// let s: String = secret(20);
 /// assert!(s.len() > 0);
 /// ```
 pub fn secret(size: usize) -> String {
@@ -25,25 +25,25 @@ pub fn secret(size: usize) -> String {
     let mut key = vec![0u8; size];
     OsRng.fill_bytes(&mut key);
 
-    BASE32.encode(&key).to_uppercase()
+    BASE32.encode(&key)
 }
 
 #[cfg(test)]
 mod tests {
+    use regex::Regex;
+
     use super::*;
 
     #[test]
     fn test_secret() {
-        let first = secret(20);
-        println!("first value = {}", first);
-        assert!(first.len() > 0);
-        assert!(first.chars().all(|c| c.is_uppercase() || c.is_digit(10)));
+        // base32 pattern https://en.wikipedia.org/wiki/Base32
+        let rg = Regex::new(r"^[A-Z2-7=]+$");
+        assert!(rg.is_ok());
 
-        let second = secret(20);
-        println!("second value = {}", second);
-        assert!(second.len() > 0);
-        assert!(second.chars().all(|c| c.is_uppercase() || c.is_digit(10)));
+        let rg = rg.unwrap();
+        let value = secret(20);
 
-        assert!(first.ne(&second));
+        println!("first value = {}", value);
+        assert!(rg.is_match(&value));
     }
 }

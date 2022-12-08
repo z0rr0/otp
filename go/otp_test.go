@@ -1,16 +1,24 @@
 package otp
 
 import (
+	"regexp"
 	"testing"
 	"time"
 )
 
+var (
+	rgBase32 = regexp.MustCompile(`^[A-Z2-7=]+$`)
+)
+
 func TestSecret(t *testing.T) {
-	secret, err := Secret(20)
+	value, err := Secret(64)
 	if err != nil {
 		t.Fatal(err)
 	}
-	t.Log(secret)
+	if !rgBase32.MatchString(value) {
+		t.Errorf("expected base32 string, got %s", value)
+	}
+	t.Log(value)
 }
 
 func TestCode(t *testing.T) {
@@ -46,9 +54,9 @@ func TestCode(t *testing.T) {
 		},
 		{
 			name:     "same time and another secret",
-			counter:  time.Date(2020, 1, 2, 3, 0, 40, 0, time.UTC).Unix() / 30,
+			counter:  time.Date(2020, 1, 2, 3, 0, 0, 0, time.UTC).Unix() / 30,
 			secret:   "AJIS553K23JWRJ4J3GDL7B6PBRWKL4AP",
-			expected: "507727",
+			expected: "239244",
 		},
 	}
 	for _, c := range cases {

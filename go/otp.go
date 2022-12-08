@@ -11,7 +11,6 @@ import (
 	"encoding/binary"
 	"fmt"
 	"math/rand"
-	"strings"
 	"time"
 )
 
@@ -47,7 +46,7 @@ func Secret(size int) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	return strings.ToUpper(base32.StdEncoding.EncodeToString(b)), nil
+	return base32.StdEncoding.EncodeToString(b), nil
 }
 
 // Code generates a new code for the given secret key.
