@@ -17,7 +17,7 @@ jobs:
     defaults:
       run:
         shell: bash
-        working-directory: rust/opt
+        working-directory: rust/otp
 
     steps:
     - uses: actions/checkout@v3
