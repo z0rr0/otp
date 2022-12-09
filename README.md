@@ -7,7 +7,9 @@
 
 One time password examples.
 
-## Languages
+Every language library/package contains public methods `secret` and `code`.
+
+## Tests
 
 ### Go
 
