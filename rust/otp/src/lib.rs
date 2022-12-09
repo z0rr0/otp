@@ -3,6 +3,7 @@
 //! `otp` is a crate for generating one-time passwords
 //! ans secret keys for that purpose.
 use std::error::Error;
+use std::io;
 use std::io::Cursor;
 use std::time::SystemTime;
 
@@ -35,6 +36,18 @@ pub fn secret(size: usize) -> String {
     OsRng.fill_bytes(&mut key);
 
     BASE32.encode(&key)
+}
+
+// Add counter_bytes to hash mac and return prepared result.
+fn hash_result(mut mac: HmacSha1, counter_bytes: &[u8]) -> io::Result<u32> {
+    mac.update(counter_bytes);
+    let result = mac.finalize();
+    let code_bytes = result.into_bytes();
+
+    let offset = code_bytes[code_bytes.len() - 1] & 0xF;
+    let offset = offset as usize;
+
+    Cursor::new(&code_bytes[offset..offset + 4]).read_u32::<BigEndian>()
 }
 
 /// Generate a one-time password.
@@ -73,21 +86,12 @@ pub fn code(secret: &str, seed: Option<u64>) -> Result<String, Box<dyn Error>> {
         return Err(Box::new(err));
     }
 
-    let n = match HmacSha1::new_from_slice(&secret) {
-        Ok(mut mac) => {
-            mac.update(&counter_bytes);
-            let result = mac.finalize();
-            let code_bytes = result.into_bytes();
-
-            let offset = code_bytes[code_bytes.len() - 1] & 0xF;
-            let offset = offset as usize;
-
-            Cursor::new(&code_bytes[offset..offset + 4]).read_u32::<BigEndian>()
-        }
+    let hash_code = match HmacSha1::new_from_slice(&secret) {
+        Ok(mac) => hash_result(mac, &counter_bytes),
         Err(err) => return Err(Box::new(err)),
     };
 
-    let code = match n {
+    let code = match hash_code {
         Ok(n) => format!("{:06}", n & 0x7FFFFFFF),
         Err(err) => return Err(Box::new(err)),
     };
@@ -126,6 +130,13 @@ mod tests {
 
         println!("secret value = {}", value);
         assert!(rg.is_match(&value));
+    }
+
+    #[test]
+    fn failed_code() {
+        let code = code("AB8*#", Some(0));
+        assert!(code.is_err());
+        println!("failed code error = {}", code.unwrap_err());
     }
 
     #[test]
