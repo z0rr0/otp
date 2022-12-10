@@ -103,6 +103,7 @@ pub fn code(secret: &str, seed: Option<u64>) -> Result<String, Box<dyn Error>> {
 #[cfg(test)]
 mod tests {
     use std::ops::Add;
+    use std::time::Instant;
 
     use chrono::{DateTime, Duration, TimeZone, Utc};
     use regex::Regex;
@@ -175,5 +176,41 @@ mod tests {
             assert!(result.is_ok());
             assert_eq!(result.unwrap(), case.expected);
         }
+    }
+
+    #[test]
+    fn benchmark_code() {
+        // benchmark tests are still unstable, so use simple time measurement
+        let values = vec![
+            "PLH5US7K4JYU3DAP7KBXNFLQ66PSRNNH",
+            "NL5VXOSCGA4FKG7FXWJLKQ3OUH6XLQI6",
+            "QT4LBO53X3Y3U5QWDJBSUD6TZIIYUQ3V",
+        ];
+        let expected = vec!["038572", "501675", "213936"];
+
+        let n = values.len() as u64;
+        let mut j;
+
+        let mut min_time: u128 = u128::MAX;
+        let mut start;
+        let mut duration;
+
+        for i in 0..100_000 {
+            j = i % n;
+            let ju = j as usize;
+
+            start = Instant::now();
+            let r = code(values[ju], Some(j));
+            duration = start.elapsed().as_nanos();
+
+            assert!(r.is_ok());
+            assert_eq!(r.unwrap(), expected[ju]);
+
+            if duration < min_time {
+                min_time = duration;
+            }
+        }
+
+        println!("benchmark: min {min_time} ns/call");
     }
 }

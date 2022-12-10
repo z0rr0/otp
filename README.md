@@ -15,7 +15,7 @@ Every language library/package contains public methods `secret` and `code`.
 
 ```shell
 cd go
-go test -v
+go test -v -bench=.
 ```
 
 ### Python
@@ -29,5 +29,5 @@ python3 -m unittest -v test_otp
 
 ```shell
 cd rust/otp
-cargo test
+cargo test -- --nocapture
 ```

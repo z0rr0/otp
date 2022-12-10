@@ -11,7 +11,7 @@ var (
 )
 
 func TestSecret(t *testing.T) {
-	value, err := Secret(64)
+	value, err := Secret(20)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -29,10 +29,22 @@ func TestCode(t *testing.T) {
 		expected string
 	}{
 		{
-			name:     "one counter",
+			name:     "zero counter",
 			counter:  0,
 			secret:   "PLH5US7K4JYU3DAP7KBXNFLQ66PSRNNH",
 			expected: "038572",
+		},
+		{
+			name:     "one counter",
+			counter:  1,
+			secret:   "NL5VXOSCGA4FKG7FXWJLKQ3OUH6XLQI6",
+			expected: "501675",
+		},
+		{
+			name:     "two counter",
+			counter:  2,
+			secret:   "QT4LBO53X3Y3U5QWDJBSUD6TZIIYUQ3V",
+			expected: "213936",
 		},
 		{
 			name:     "some time",
@@ -69,5 +81,35 @@ func TestCode(t *testing.T) {
 				tt.Errorf("expected %s, got %s", c.expected, code)
 			}
 		})
+	}
+}
+
+func BenchmarkCode(b *testing.B) {
+	var (
+		values = []string{
+			"PLH5US7K4JYU3DAP7KBXNFLQ66PSRNNH",
+			"NL5VXOSCGA4FKG7FXWJLKQ3OUH6XLQI6",
+			"QT4LBO53X3Y3U5QWDJBSUD6TZIIYUQ3V",
+		}
+		expected = []string{
+			"038572",
+			"501675",
+			"213936",
+		}
+		n = len(values)
+	)
+
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		j := i % n
+
+		c, err := Code(values[j], int64(j))
+		if err != nil {
+			b.Fatal(err)
+		}
+
+		if c != expected[j] {
+			b.Errorf("expected %s, got %s", expected[j], c)
+		}
 	}
 }

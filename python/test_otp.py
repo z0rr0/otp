@@ -1,4 +1,5 @@
 import re
+import time
 from datetime import datetime, timedelta, timezone
 from unittest import TestCase
 
@@ -35,3 +36,30 @@ class TestOTP(TestCase):
     def test_another_secret(self) -> None:
         value = 'AJIS553K23JWRJ4J3GDL7B6PBRWKL4AP'
         self.assertEqual('239244', code(value, dt2unix(self.dt)))
+
+
+class TestBenchmarkOTP(TestCase):
+
+    def test_code(self) -> None:
+        """Measure the minimal time to generate a code."""
+        values = [
+            "PLH5US7K4JYU3DAP7KBXNFLQ66PSRNNH",
+            "NL5VXOSCGA4FKG7FXWJLKQ3OUH6XLQI6",
+            "QT4LBO53X3Y3U5QWDJBSUD6TZIIYUQ3V",
+        ]
+        expected = ["038572", "501675", "213936"]
+        n = len(values)
+
+        min_time = 0
+        for i in range(100_000):
+            j = i % n
+
+            start = time.process_time_ns()
+            c = code(values[j], j)
+            duration = time.process_time_ns() - start
+
+            self.assertEqual(expected[j], c)
+            if duration < min_time or not min_time:
+                min_time = duration
+
+        print(f'benchmark: min {min_time} ns per call')
